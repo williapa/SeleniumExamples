@@ -42,11 +42,7 @@ public class AmazonSearchResultsPage {
 
     public boolean verify() {
 
-        // WebElement h3 = showResultsFor.findElement(By.cssSelector("h3"));
-
-        String actual =  showResultsFor.getText().substring(0,title.length()); //h3.getText();
-
-        System.out.println(">>> big black guy: " + actual);
+        String actual =  showResultsFor.getText().substring(0,title.length());
 
         return (actual.equals(title));
 
