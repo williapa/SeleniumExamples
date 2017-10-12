@@ -10,7 +10,7 @@ public class YahooPage {
     private WebDriver driver;
 
     // Page URL
-    private static String PAGE_URL= "https://www.yahoo.com";
+    private static String PAGE_URL = "https://www.yahoo.com";
 
     // Locators
     @FindBy(css="#uh-search-box")

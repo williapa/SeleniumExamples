@@ -8,7 +8,6 @@ import org.openqa.selenium.support.PageFactory;
 import java.util.*;
 
 public class AmazonHomePage {
-
     private WebDriver driver;
 
     final public static String title = "Amazon.com: Online Shopping for Electronics, Apparel, Computers, Books, DVDs & more";
@@ -33,45 +32,28 @@ public class AmazonHomePage {
     private static String PAGE_URL="https://www.amazon.com";
 
     public AmazonHomePage(WebDriver driver) {
-
         this.driver = driver;
-
         driver.get(PAGE_URL);
-
         // Initialise Elements
         PageFactory.initElements(driver, this);
-
     }
 
     public boolean verify() {
-
         String actualTitle = driver.getTitle();
-
-        return (actualTitle.equals(title));
-
+        return actualTitle.equals(title);
     }
 
     public void enterSearchText(String search) {
-
         searchInput.sendKeys(search);
-
     }
 
     public AmazonSearchResultsPage clickSearch() {
-
         searchButton.click();
-
         return new AmazonSearchResultsPage(driver);
-
     }
 
     public AmazonSignInPage clickSignIn() {
-
         navLinkAccountList.click();
-
         return new AmazonSignInPage(driver);
-
     }
-
-
 }
