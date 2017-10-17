@@ -1,4 +1,4 @@
-package com.paul;
+package com.paul.page;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;

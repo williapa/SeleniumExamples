@@ -1,18 +1,10 @@
-package com.paul;
+package com.paul.page;
 
-import org.openqa.selenium.By;
+import com.paul.page.AmazonDetailPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-
-import org.openqa.selenium.OutputType;
-
-import org.openqa.selenium.TakesScreenshot;
 
 import java.util.List;
 

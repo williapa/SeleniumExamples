@@ -1,5 +1,6 @@
-package com.paul;
+package com.paul.driver;
 
+import com.paul.domain.UserAgents;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -46,7 +47,7 @@ public class DriverFactory {
         return phantom;
     }
 
-    public WebDriver getPhantomDriver() {
+    public WebDriver getPhantomJSDriver() {
         return new PhantomJSDriver();
     }
 

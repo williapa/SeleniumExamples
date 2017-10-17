@@ -1,4 +1,4 @@
-package com.paul;
+package com.paul.domain;
 
 public class UserAgents {
 
