@@ -58,9 +58,16 @@ public abstract class BaseTest {
             System.out.println(t.isPassedSinceLastPush());
         }
         qe = new DynamoDBQueryExpression();
-        Assertion a = new Assertion();
-        qe.withHashKeyValues(a);
+        Assertion at = new Assertion();
+        qe.withHashKeyValues(at);
         assertions = mapper.scan(Assertion.class, new DynamoDBScanExpression());
+        for(Assertion a: assertions) {
+            System.out.println(a.getId());
+            System.out.println(a.getExpected());
+            System.out.println(a.getAttribute());
+            System.out.println(a.getSelector());
+            System.out.println(a.getDescription());
+        }
     }
 
     public static By getBy(Assertion assertion) {
@@ -75,18 +82,19 @@ public abstract class BaseTest {
     }
 
     public static boolean compare(String comparator, int found, int expected) {
-        if ("=".equals(comparator.charAt(0))) {
+        System.out.println("comparator: " + comparator);
+        if ("=".equals(comparator.substring(0,1))) {
             return found == expected;
         } else if (">=".equals(comparator.substring(0, 2))) {
             return found >= expected;
         } else if ("<=".equals(comparator.substring(0, 2))) {
             return found <= expected;
-        } else if (">".equals(comparator.charAt(0))) {
+        } else if (">".equals(comparator.substring(0,1))) {
             return found > expected;
-        } else if ("<".equals(comparator.charAt(0))) {
+        } else if ("<".equals(comparator.substring(0,1))) {
             return found < expected;
         } else {
-            //throw exception;
+            System.out.println("error comparing ints in compare");
             return false;
         }
     }
@@ -94,30 +102,34 @@ public abstract class BaseTest {
     public static boolean assertSize(WebDriver driver, Assertion assertion) {
         String expected = assertion.getExpected();
         int size = driver.findElements(getBy(assertion)).size();
-        String value = expected.replaceFirst("/[><=]/", "");
-        return compare(expected, size, parseInt(value));
+        String value = expected.replaceFirst("(>)*(<)*(=)*", "");
+        System.out.println("comparing to value value: " + value);
+        return compare(assertion.getExpected(), size, parseInt(value));
     }
 
     public static boolean assertStringLength(WebElement element, String expected) {
-        String value = expected.replaceFirst("/[><=]/", "");
-        return compare(expected,element.getText().length(), parseInt(value));
+        String x = expected;
+        String value = expected.replaceFirst("(>)*(<)*(=)*", "");
+        System.out.println("comparing to value value: " + value);
+        return compare(x, element.getText().length(), parseInt(value));
     }
 
-    public static boolean executeAssertion(WebDriver driver, WebElement element, Assertion assertion) {
+    public static boolean executeAssertion(WebDriver driver, By selector, Assertion assertion) {
         String attribute = assertion.getAttribute();
         String expected = assertion.getExpected();
-        if ("text" == attribute) {
-            return element.getText().matches(expected);
-        } else if ("length" == attribute) {
-            return assertStringLength(element, expected);
-        } else if ("size" == attribute) {
+        if ("text".equals(attribute)) {
+            return driver.findElement(selector).getText().matches(expected);
+        } else if ("length".equals(attribute)) {
+            return assertStringLength(driver.findElement(selector), expected);
+        } else if ("size".equals(attribute)) {
            return assertSize(driver, assertion);
-        } else if ("visible" == attribute) {
-            return element.isDisplayed();
-        } else if("title" == attribute) {
+        } else if ("visible".equals(attribute)) {
+            return driver.findElement(selector).isDisplayed();
+        } else if("title".equals(attribute)) {
+            System.out.println("found title: " + driver.getTitle());
             return driver.getTitle().matches(expected);
         } else {
-            return element.getAttribute(attribute).matches(expected);
+            return driver.findElement(selector).getAttribute(attribute).matches(expected);
         }
     }
 
@@ -137,14 +149,13 @@ public abstract class BaseTest {
         driver.get(testData.getUrl());
         takeScreenshot(driver, testData.getMethodName());
         List<Boolean> results = new ArrayList<>();
-        testData.getAssertions();
         List<Assertion> relevantAssertions = assertions.stream()
             .filter(assertion -> testData.getAssertions().contains(assertion.getId()))
             .collect(Collectors.toList());
         for(Assertion assertion : relevantAssertions){
+            System.out.println("executing assertion number: " + assertion.getId());
             By selector = getBy(assertion);
-            WebElement element = driver.findElement(selector);
-            boolean result = executeAssertion(driver, element, assertion);
+            boolean result = executeAssertion(driver, selector, assertion);
             if(!result) {
                 System.out.println(testData.getMethodName() + "failed.");
                 System.out.println("assertion: " + assertion.getDescription());
@@ -152,6 +163,8 @@ public abstract class BaseTest {
                 System.out.println("selector: " + assertion.getSelector());
                 System.out.println("attribute: " + assertion.getAttribute());
                 System.out.println("expected: " + assertion.getExpected());
+            } else {
+                System.out.println("Assertion " + assertion.getId() + " passed.");
             }
             results.add(result);
         }
