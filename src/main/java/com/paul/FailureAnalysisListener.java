@@ -3,13 +3,13 @@ package com.paul;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.paul.domain.TestData;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
 import org.junit.runner.notification.RunListener;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +27,10 @@ public class FailureAnalysisListener extends RunListener {
     @Override
     public void testRunFinished(Result result) {
         int count = 1;
-        System.out.println("You patiently waited " + result.getRunTime()/1000 + " seconds while my tests did the heavy lifting...");
+        System.out.println("You patiently waited " + result.getRunTime()/1000 + " for the tests to finish.");
         System.out.println("There were " + result.getFailureCount() + " failures out of " + result.getRunCount());
         if (result.getFailureCount() == 0) {
-            System.out.println("You achieved: Continuous Integration!");
+            System.out.println("The tests passed.");
         }
         for(Failure f : result.getFailures()) {
             //log for now, write to database in future
@@ -45,10 +45,14 @@ public class FailureAnalysisListener extends RunListener {
                     .collect(Collectors.toList());
             testData = updateTest;
         }
-        // now for every test left in the collection, save the last passed date as now.
+        // now for every test left in the collection, save the last passed date as now if it isn't a skip
+        Date now = new Date();
         for(TestData td : testData) {
-            td.setPassedSinceLastPush(true);
-            mapper.save(td);
+            if(!td.skippable()) {
+                td.setLastPassed((int) now.getTime());
+                mapper.save(td);
+            }
+
         }
     }
 }

@@ -34,7 +34,7 @@ public class AmazonDetailPage extends AmazonCommon {
     private List<WebElement> customersAlsoBoughtSlides;
 
     @FindBy(css="#sims-consolidated=2_feature_div .a-carousel-right a")
-    private WebElement customersAlsoBoughtRightButton;
+    public WebElement customersAlsoBoughtRightButton;
 
     private WebDriver driver;
 
@@ -42,7 +42,6 @@ public class AmazonDetailPage extends AmazonCommon {
         super(driver);
         // Initialise Elements
         PageFactory.initElements(driver, this);
-
     }
 
     public AmazonSignInPage buyWithoutBeingSignedIn() {

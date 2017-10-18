@@ -23,6 +23,8 @@ public class SampleTest extends BaseTest {
         GoogleResultsPage results = googleHome.clickSearch();
         String link = results.getResult();
         Assert.assertEquals(link, expectedFirstResult);
+        AmazonDetailPage adp = new AmazonDetailPage(driver);
+        adp.customersAlsoBoughtRightButton.getText();
     }
 
     private void getPriceOfBitcoin(WebDriver driver) throws Exception {
